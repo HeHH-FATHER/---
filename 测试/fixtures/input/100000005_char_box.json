@@ -1,0 +1,8 @@
+{
+  "uid": "100000005",
+  "characters": [
+    {"name": "玛薇卡", "star": 99, "constellation": 2, "level": 90},
+    {"name": "班尼特", "star": 4, "constellation": 7, "level": 80},
+    {"name": "香菱", "star": 4, "constellation": 5, "level": 80}
+  ]
+}

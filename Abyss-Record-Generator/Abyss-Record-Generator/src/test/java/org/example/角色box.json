@@ -1,0 +1,467 @@
+{
+  "uid": "692539232",
+  "characters": [
+    {
+      "name": "丽莎",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "凯亚",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "安柏",
+      "star": 4,
+      "constellation": 3,
+      "level": 80
+    },
+    {
+      "name": "柯莱",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "班尼特",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "芭芭拉",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "诺艾尔",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "香菱",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "卡齐娜",
+      "star": 4,
+      "constellation": 2,
+      "level": 80
+    },
+    {
+      "name": "琳妮特",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "瑶瑶",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "砂糖",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "菲谢尔",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "行秋",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "赛索斯",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "爱诺",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "坎蒂丝",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "雅珂达",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "五郎",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "嘉明",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "雷泽",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "珐露珊",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "罗莎莉亚",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "迪奥娜",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "夏洛蒂",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "重云",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "烟绯",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "久岐忍",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "夏沃蕾",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "多莉",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "北斗",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "绮良良",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "凝光",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "蓝砚",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "伊法",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "托马",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "九条裟罗",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "云堇",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "米卡",
+      "star": 4,
+      "constellation": 5,
+      "level": 80
+    },
+    {
+      "name": "莱依拉",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "提纳里",
+      "star": 5,
+      "constellation": 4,
+      "level": 90
+    },
+    {
+      "name": "鹿野院平藏",
+      "star": 4,
+      "constellation": 6,
+      "level": 80
+    },
+    {
+      "name": "辛焱",
+      "star": 4,
+      "constellation": 1,
+      "level": 80
+    },
+    {
+      "name": "欧洛伦",
+      "star": 4,
+      "constellation": 3,
+      "level": 80
+    },
+    {
+      "name": "莫娜",
+      "star": 5,
+      "constellation": 3,
+      "level": 90
+    },
+    {
+      "name": "刻晴",
+      "star": 5,
+      "constellation": 5,
+      "level": 90
+    },
+    {
+      "name": "早柚",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "琴",
+      "star": 5,
+      "constellation": 4,
+      "level": 90
+    },
+    {
+      "name": "七七",
+      "star": 5,
+      "constellation": 3,
+      "level": 90
+    },
+    {
+      "name": "芙宁娜",
+      "star": 5,
+      "constellation": 2,
+      "level": 90
+    },
+    {
+      "name": "迪希雅",
+      "star": 5,
+      "constellation": 3,
+      "level": 90
+    },
+    {
+      "name": "塔利雅",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "伊安珊",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "哥伦比娅",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "梦见月瑞希",
+      "star": 5,
+      "constellation": 2,
+      "level": 90
+    },
+    {
+      "name": "纳西妲",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "希诺宁",
+      "star": 5,
+      "constellation": 0,
+      "level": 90
+    },
+    {
+      "name": "叶洛亚",
+      "star": 4,
+      "constellation": 2,
+      "level": 80
+    },
+    {
+      "name": "钟离",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "布伦妮",
+      "star": 4,
+      "constellation": 4,
+      "level": 80
+    },
+    {
+      "name": "茜特菈莉",
+      "star": 5,
+      "constellation": 0,
+      "level": 90
+    },
+    {
+      "name": "爱可菲",
+      "star": 5,
+      "constellation": 0,
+      "level": 90
+    },
+    {
+      "name": "玛薇卡",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "那维莱特",
+      "star": 5,
+      "constellation": 3,
+      "level": 90
+    },
+    {
+      "name": "丝柯克",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "夜兰",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "尼可",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "伊涅芙",
+      "star": 5,
+      "constellation": 0,
+      "level": 90
+    },
+    {
+      "name": "莉奈娅",
+      "star": 5,
+      "constellation": 0,
+      "level": 90
+    },
+    {
+      "name": "兹白",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "艾尔海森",
+      "star": 5,
+      "constellation": 2,
+      "level": 90
+    },
+    {
+      "name": "奈芙尔",
+      "star": 5,
+      "constellation": 1,
+      "level": 90
+    },
+    {
+      "name": "妮露",
+      "star": 5,
+      "constellation": 2,
+      "level": 90
+    },
+    {
+      "name": "瓦雷莎",
+      "star": 5,
+      "constellation": 2,
+      "level": 90
+    },
+    {
+      "name": "玛拉妮",
+      "star": 5,
+      "constellation": 2,
+      "level": 90
+    },
+    {
+      "name": "神里绫人",
+      "star": 5,
+      "constellation": 4,
+      "level": 90
+    },
+    {
+      "name": "林尼",
+      "star": 5,
+      "constellation": 4,
+      "level": 90
+    }
+  ]
+}

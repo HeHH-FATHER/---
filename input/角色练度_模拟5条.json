@@ -1,0 +1,102 @@
+[
+  {
+    "role": "玛薇卡",
+    "ename": "Mavuika",
+    "star": 5,
+    "uid": "180234567",
+    "level": 90,
+    "constellation": 2,
+    "talent_na": 4,
+    "talent_skill": 9,
+    "talent_burst": 10,
+    "avg_damage": 163520,
+    "damage_type": "Q爆发伤害",
+    "weapon": {
+      "name": "焚曜千阳",
+      "refinement": 1
+    },
+    "artifact_set": {
+      "name": "黑曜秘典4"
+    }
+  },
+  {
+    "role": "芙宁娜",
+    "ename": "Furina",
+    "star": 5,
+    "uid": "180234569",
+    "level": 90,
+    "constellation": 2,
+    "talent_na": 4,
+    "talent_skill": 10,
+    "talent_burst": 10,
+    "avg_damage": 97320,
+    "damage_type": "E总伤害",
+    "weapon": {
+      "name": "静水流涌之辉",
+      "refinement": 1
+    },
+    "artifact_set": {
+      "name": "黄金剧团4"
+    }
+  },
+  {
+    "role": "雷电将军",
+    "ename": "Raiden Shogun",
+    "star": 5,
+    "uid": "180234570",
+    "level": 90,
+    "constellation": 3,
+    "talent_na": 5,
+    "talent_skill": 9,
+    "talent_burst": 13,
+    "avg_damage": 116800,
+    "damage_type": "Q拔刀",
+    "weapon": {
+      "name": "薙草之稻光",
+      "refinement": 1
+    },
+    "artifact_set": {
+      "name": "绝缘之旗印4"
+    }
+  },
+  {
+    "role": "丝柯克",
+    "ename": "Skirk",
+    "star": 5,
+    "uid": "180234571",
+    "level": 90,
+    "constellation": 0,
+    "talent_na": 3,
+    "talent_skill": 9,
+    "talent_burst": 9,
+    "avg_damage": 102460,
+    "damage_type": "E一轮总伤",
+    "weapon": {
+      "name": "苍耀",
+      "refinement": 1
+    },
+    "artifact_set": {
+      "name": "深廊终曲4"
+    }
+  },
+  {
+    "role": "钟离",
+    "ename": "Zhongli",
+    "star": 5,
+    "uid": "180234572",
+    "level": 90,
+    "constellation": 0,
+    "talent_na": 2,
+    "talent_skill": 10,
+    "talent_burst": 7,
+    "avg_damage": 21800,
+    "damage_type": "Q伤害",
+    "weapon": {
+      "name": "黑缨枪",
+      "refinement": 5
+    },
+    "artifact_set": {
+      "name": "千岩牢固4"
+    }
+  }
+]

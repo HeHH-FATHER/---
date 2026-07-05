@@ -1,0 +1,49 @@
+{
+  "uid": "692539232",
+  "teams": [
+    {
+      "half": 1,
+      "team_rank": 1,
+      "members": [
+        {
+          "name": "玛薇卡",
+          "star": 5
+        },
+        {
+          "name": "希诺宁",
+          "star": 5
+        },
+        {
+          "name": "茜特菈莉",
+          "star": 5
+        },
+        {
+          "name": "班尼特",
+          "star": 4
+        }
+      ]
+    },
+    {
+      "half": 2,
+      "team_rank": 4,
+      "members": [
+        {
+          "name": "丝柯克",
+          "star": 5
+        },
+        {
+          "name": "爱可菲",
+          "star": 5
+        },
+        {
+          "name": "莫娜",
+          "star": 5
+        },
+        {
+          "name": "芙宁娜",
+          "star": 5
+        }
+      ]
+    }
+  ]
+}

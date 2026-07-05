@@ -1,0 +1,21 @@
+{
+  "uid": "100000004",
+  "teams": [
+    {
+      "half": 1,
+      "team_index": 7,
+      "members": [
+        {"name": "尼可", "star": 5},
+        {"name": "班尼特", "star": 4}
+      ]
+    },
+    {
+      "half": 2,
+      "team_index": 8,
+      "members": [
+        {"name": "杜林", "star": 5},
+        {"name": "茜特菈莉", "star": 5}
+      ]
+    }
+  ]
+}

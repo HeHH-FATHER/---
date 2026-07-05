@@ -1,0 +1,25 @@
+{
+  "uid": "100000001",
+  "teams": [
+    {
+      "half": 1,
+      "team_index": 1,
+      "members": [
+        {"name": "玛薇卡", "star": 5},
+        {"name": "班尼特", "star": 4},
+        {"name": "希诺宁", "star": 5},
+        {"name": "枫原万叶", "star": 5}
+      ]
+    },
+    {
+      "half": 2,
+      "team_index": 2,
+      "members": [
+        {"name": "茜特菈莉", "star": 5},
+        {"name": "芙宁娜", "star": 5},
+        {"name": "香菱", "star": 4},
+        {"name": "钟离", "star": 5}
+      ]
+    }
+  ]
+}

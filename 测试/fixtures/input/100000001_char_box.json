@@ -1,0 +1,17 @@
+{
+  "uid": "100000001",
+  "characters": [
+    {"name": "玛薇卡", "star": 5, "constellation": 2, "level": 90},
+    {"name": "班尼特", "star": 4, "constellation": 6, "level": 80},
+    {"name": "茜特菈莉", "star": 5, "constellation": 0, "level": 90},
+    {"name": "希诺宁", "star": 5, "constellation": 0, "level": 90},
+    {"name": "枫原万叶", "star": 5, "constellation": 0, "level": 90},
+    {"name": "芙宁娜", "star": 5, "constellation": 1, "level": 90},
+    {"name": "香菱", "star": 4, "constellation": 6, "level": 80},
+    {"name": "行秋", "star": 4, "constellation": 5, "level": 80},
+    {"name": "钟离", "star": 5, "constellation": 0, "level": 90},
+    {"name": "雷电将军", "star": 5, "constellation": 2, "level": 90},
+    {"name": "莫娜", "star": 5, "constellation": 3, "level": 80},
+    {"name": "菲谢尔", "star": 4, "constellation": 6, "level": 80}
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "code": 200,
+  "version": "当前版本:6.6",
+  "roleList": [
+    {
+      "id": 206,
+      "type": "role",
+      "version": "6.6下半",
+      "start_time": "2026-06-09",
+      "end_time": "2026-06-30",
+      "content": {
+        "玛薇卡": 150469,
+        "洛恩": 38155
+      },
+      "imgList": [
+        "https://upload-bbs.miyoushe.com/upload/2026/06/02/75276539/2978c372ad47646553005aa03483129c_9001820130716142234.jpg",
+        "https://upload-bbs.miyoushe.com/upload/2026/06/02/75276539/536e0524f96420c161a41cdf03f0fe8e_4819561371080340355.png"
+      ]
+    },
+    {
+      "id": 204,
+      "type": "role",
+      "version": "6.6上半",
+      "start_time": "2026-05-20",
+      "end_time": "2026-06-09",
+      "content": {
+        "尼可": 224853,
+        "杜林": 40683
+      },
+      "imgList": [
+        "https://upload-bbs.miyoushe.com/upload/2026/05/20/75276539/8f979454c4ea789e67d06a3a91118b51_418502918652885143.jpg",
+        "https://upload-bbs.miyoushe.com/upload/2026/05/20/75276539/ad1498daae8577a68914b5462a604b93_210625938444102700.jpg"
+      ]
+    }
+  ],
+  "weaponList": [
+    {
+      "id": 207,
+      "type": "weapon",
+      "version": "6.6下半",
+      "start_time": "2026-06-09",
+      "end_time": "2026-06-30",
+      "content": {
+        "焚曜千阳": 41751,
+        "灾悔": 25539
+      },
+      "imgList": [
+        "https://upload-bbs.miyoushe.com/upload/2026/06/02/75276539/8efb0eb6bc38bc17a7e68225a4a521d0_7252617281778364306.jpg"
+      ]
+    },
+    {
+      "id": 205,
+      "type": "weapon",
+      "version": "6.6上半",
+      "start_time": "2026-05-20",
+      "end_time": "2026-06-09",
+      "content": {
+        "尘光七谕": 25123,
+        "黑蚀": 15533
+      },
+      "imgList": [
+        "https://upload-bbs.miyoushe.com/upload/2026/05/20/75276539/ab6d6b9fd90ba18f4ca69eda6e0d3e4c_3854000323700925786.jpg"
+      ]
+    }
+  ]
+}
