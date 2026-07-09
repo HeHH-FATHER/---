@@ -1,14 +1,18 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════
-# 逐风数据洞察平台 — 全链路一键启动
+# 逐风数据洞察平台 — 全链路一键启动（含健康监测）
 # 运行位置：master0（需要能 SSH 到 Middleware）
 # ═══════════════════════════════════════════════════════════════
-set -e
 export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 cd /root/abyss-pipeline
 
+RED='\033[0;31m'; GRN='\033[0;32m'; YLW='\033[0;33m'; NC='\033[0m'
+PASS="${GRN}✅${NC}"; FAIL="${RED}❌${NC}"; WARN="${YLW}⚠️${NC}"
+
+check() { if [ "$1" -ge "$2" ] 2>/dev/null; then echo -e "$PASS $3"; else echo -e "$FAIL $3 (期望≥$2，实际$1)"; fi; }
+
 echo "╔══════════════════════════════════════════════╗"
-echo "║  逐风数据洞察平台 — 全链路启动               ║"
+echo "║  逐风数据洞察平台 — 全链路启动（含监测）      ║"
 echo "╚══════════════════════════════════════════════╝"
 
 # ═══════════════════════════════════════════════
@@ -22,49 +26,78 @@ ssh Middleware "
   /root/kafka2/bin/zookeeper-server-start.sh -daemon /root/kafka2/config/zookeeper.properties
   sleep 3
   /root/kafka2/bin/kafka-server-start.sh -daemon /root/kafka2/config/server.properties
-" && echo "  MySQL + Redis + ZK + Kafka ✅"
+  sleep 2
+  echo \"MYSQL=\$(systemctl is-active mysql 2>/dev/null)\"
+  echo \"REDIS=\$(systemctl is-active redis-server 2>/dev/null)\"
+  echo \"KAFKA=\$(ps aux | grep kafka.Kafka | grep -v grep | wc -l)\"
+" 2>&1 | while read line; do
+  case "\$line" in
+    MYSQL=active) echo -e "  $PASS MySQL" ;;
+    MYSQL=*)      echo -e "  $FAIL MySQL (\$line)" ;;
+    REDIS=active) echo -e "  $PASS Redis" ;;
+    REDIS=*)      echo -e "  $FAIL Redis (\$line)" ;;
+    KAFKA=*)      check "\${line#KAFKA=}" 1 "Kafka" ;;
+  esac
+done
 
 # ═══════════════════════════════════════════════
 # 第2步：Hadoop + Spark 集群
 # ═══════════════════════════════════════════════
 echo ""
 echo "【2/6】Hadoop + Spark 集群..."
-/root/hadoop-2.7.6/sbin/start-dfs.sh
-/root/hadoop-2.7.6/sbin/start-yarn.sh
-/usr/local/zookeeper/bin/zkServer.sh start
-/root/spark-2.4.0/sbin/start-all.sh
-echo "  HDFS + YARN + Spark ✅"
+/root/hadoop-2.7.6/sbin/start-dfs.sh 2>&1 | tail -1
+/root/hadoop-2.7.6/sbin/start-yarn.sh 2>&1 | tail -1
+/usr/local/zookeeper/bin/zkServer.sh start 2>&1 | grep -E 'STARTED|already'
+/root/spark-2.4.0/sbin/start-all.sh 2>&1 | tail -1
+
+sleep 5
+NN=$(/root/jdk1.8.0_171/bin/jps | grep -c NameNode 2>/dev/null || echo 0)
+RM=$(/root/jdk1.8.0_171/bin/jps | grep -c ResourceManager 2>/dev/null || echo 0)
+SM=$(/root/jdk1.8.0_171/bin/jps | grep -c Master 2>/dev/null || echo 0)
+check "$NN" 1 "NameNode"
+check "$RM" 1 "ResourceManager"
+check "$SM" 1 "Spark Master"
 
 # ═══════════════════════════════════════════════
 # 第3步：Java 生成器
 # ═══════════════════════════════════════════════
 echo ""
 echo "【3/6】Java 生成器..."
-bash start_generators.sh
-echo "  练度 + 满意度 ✅"
+bash start_generators.sh 2>&1 | tail -3
+sleep 2
+GEN=$(ps aux | grep -cE 'build_stats|SatisfactionProducerApp' 2>/dev/null || echo 0)
+check "$GEN" 2 "生成器进程"
 
 # ═══════════════════════════════════════════════
-# 第4步：离线管道（抽卡循环 + 深渊循环）
+# 第4步：离线管道（抽卡 + 深渊）
 # ═══════════════════════════════════════════════
 echo ""
 echo "【4/6】离线管道..."
-# 抽卡
 pkill -f run_gacha_loop 2>/dev/null || true
-nohup bash scripts/run_gacha_loop.sh > /tmp/gacha_loop.log 2>&1 &
-echo "  抽卡循环 ✅ （每5分钟）"
-
-# 深渊
 pkill -f run_abyss_loop 2>/dev/null || true
+sleep 1
+nohup bash scripts/run_gacha_loop.sh > /tmp/gacha_loop.log 2>&1 &
 nohup bash scripts/run_abyss_loop.sh > /tmp/abyss_loop.log 2>&1 &
-echo "  深渊循环 ✅ （每10分钟）"
+
+sleep 3
+GC=$(ps aux | grep -c run_gacha_loop 2>/dev/null || echo 0)
+AB=$(ps aux | grep -c run_abyss_loop 2>/dev/null || echo 0)
+check "$GC" 1 "抽卡循环"
+check "$AB" 1 "深渊循环"
 
 # ═══════════════════════════════════════════════
 # 第5步：Spark Streaming 消费端
 # ═══════════════════════════════════════════════
 echo ""
 echo "【5/6】Spark Streaming 消费端..."
-bash scripts/start_spark_streaming.sh
-echo "  Spark Streaming ✅"
+bash scripts/start_spark_streaming.sh 2>&1 | grep -E 'PID|error|Error' | head -5
+
+sleep 15
+SP=$(ps aux | grep -c SparkSubmit 2>/dev/null || echo 0)
+check "$SP" 2 "Spark 作业"
+# Spark 集群应用数
+APPS=$(curl -s http://localhost:8080/json/ 2>/dev/null | python3 -c 'import json,sys; print(len(json.load(sys.stdin).get("activeapps",[])))' 2>/dev/null || echo 0)
+check "$APPS" 2 "Spark Apps (期望≥2)"
 
 # ═══════════════════════════════════════════════
 # 第6步：链路监控
@@ -75,15 +108,21 @@ ssh Middleware "pkill -f monitor_collector 2>/dev/null; cd /root/abyss-pipeline 
 pkill -f monitor_master0 2>/dev/null || true
 sleep 1
 nohup python3 -u scripts/monitor_master0.py --loop > /tmp/monitor_m0.log 2>&1 &
-echo "  6节点监控 ✅"
+
+sleep 8
+MM=$(ps aux | grep -c monitor_master0 2>/dev/null || echo 0)
+MW=$(ssh Middleware "ps aux | grep -c monitor_collector" 2>/dev/null || echo 0)
+check "$MM" 1 "master0 监控"
+check "$MW" 1 "Middleware 监控"
 
 # ═══════════════════════════════════════════════
+# 汇总
+# ═══════════════════════════════════════════════
 echo ""
-echo "╔══════════════════════════════════════════════╗"
-echo "║  全链路启动完成！                            ║"
-echo "╠══════════════════════════════════════════════╣"
-echo "║  验证命令:                                   ║"
-echo "║    ps aux | grep -E 'SparkSubmit|java|python' ║"
-echo "║    curl -s http://localhost:8080/json/       ║"
-echo "║    redis-cli -h Middleware LLEN build:recent ║"
-echo "╚══════════════════════════════════════════════╝"
+echo "╔══════════════════════════════════════╗"
+echo "║       全链路启动监测完成              ║"
+echo "╠══════════════════════════════════════╣"
+echo "║  生成器:  $GEN  | 离线管道: $GC/$AB   ║"
+echo "║  Spark:   $SP  | Apps:     $APPS     ║"
+echo "║  监控:    $MM (M0) / $MW (MW)       ║"
+echo "╚══════════════════════════════════════╝"

@@ -97,30 +97,32 @@ def main():
     r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True, socket_connect_timeout=3)
     loop = "--loop" in sys.argv
 
-    print("[Monitor-M0] 采集器启动（4节点 + HDFS + 生成器）")
+    print("[Monitor-M0] 采集器启动（本地每5s / 远程每15s）")
+    _cycle = 0
     while True:
+        _cycle += 1
         data = {}
 
-        # HDFS
+        # HDFS + 生成器 + Spark（本地，每轮）
         hdfs = get_hdfs_usage()
         if hdfs >= 0: data["hdfs_usage"] = hdfs
-
-        # 生成器
         data["generator_count"] = get_generator_count()
-
-        # Spark Streaming
         data["streaming_count"] = get_spark_streaming_count()
-
-        # Spark
         data.update(get_spark_metrics())
 
-        # 所有节点系统指标（SSH 到 localhost/slave1/slave2/backup）
-        for name, host in NODES.items():
-            m = get_node_metrics(host)
-            prefix = "m0" if name == "master0" else name
-            data[f"{prefix}_cpu"] = m["cpu"]
-            data[f"{prefix}_mem"] = m["mem"]
-            data[f"{prefix}_disk"] = m["disk"]
+        # 远程节点：每 3 轮（15s）SSH 一次
+        if _cycle % 3 == 1:
+            for name, host in NODES.items():
+                if name == "master0": continue  # 本地直接取
+                m = get_node_metrics(host)
+                data[f"{name}_cpu"] = m["cpu"]
+                data[f"{name}_mem"] = m["mem"]
+                data[f"{name}_disk"] = m["disk"]
+            # 本地 master0
+            m = get_node_metrics("localhost")
+            data["m0_cpu"] = m["cpu"]
+            data["m0_mem"] = m["mem"]
+            data["m0_disk"] = m["disk"]
 
         try:
             r.hmset("screen:monitor", data)
@@ -128,11 +130,8 @@ def main():
         except Exception as e:
             print(f"[Monitor-M0] Redis 写入失败: {e}")
 
-        cpu_mem = []
-        for name in ["master0","slave1","slave2","backup","vserver"]:
-            k = "m0" if name == "master0" else name
-            cpu_mem.append(f"{name}={data.get(f'{k}_cpu',0)}/{data.get(f'{k}_mem',0)}%")
-        print(f"[Monitor-M0] HDFS={data.get('hdfs_usage','?')}% Gen={data['generator_count']} | " + " | ".join(cpu_mem))
+        remote = "/".join([f"{n}={data.get(n+'_cpu',data.get('m0_cpu' if n=='master0' else n+'_cpu',0))}" for n in ["master0","slave1","slave2","backup","vserver"]])
+        print(f"[Monitor-M0] HDFS={data.get('hdfs_usage','?')}% Gen={data.get('generator_count',0)} Spark={data.get('streaming_count',0)} | {remote}")
 
         if not loop: break
         time.sleep(5)
