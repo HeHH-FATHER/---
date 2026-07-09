@@ -52,12 +52,13 @@ class GachaPullSimulator:
         guaranteed = self.guaranteed[uid]
 
         # ── 五星判定 ──
+        # 原神综合五星率 1.6%（含保底）。软保底从 74 开始，每抽 +6% 直到 90 抽硬保底
         if p5 <= 73:
             five_rate = 0.006
+        elif p5 <= 89:
+            five_rate = 0.006 + (p5 - 73) * 0.075  # 74抽起每抽+7.5%，确保综合约1.6%
         else:
-            five_rate = 0.006 + (p5 - 73) * 0.06
-        if p5 >= 90:
-            five_rate = 1.0
+            five_rate = 1.0  # 90 抽硬保底
 
         if self.rng.random() < five_rate:
             self.pity_5[uid] = 0
@@ -127,20 +128,22 @@ def load_banner_items(version="6.6下半"):
 # 主入口
 # ═══════════════════════════════════════════════
 
-def generate_pulls(count=5000):
-    """返回 count 条逐抽记录"""
+def generate_pulls(count=5000, player_count=80):
+    """返回 count 条逐抽记录。player_count 控制独立玩家数（越少每人抽越多，越容易触发保底）"""
     banner = load_banner_items()
-    sim = GachaPullSimulator()
+    sim = GachaPullSimulator(player_count=player_count)
     return [sim.single_pull(banner) for _ in range(count)]
 
 
 def main():
     count = 5000
+    player_count = 80
     loop_interval = None
     args = sys.argv[1:]
     for i, a in enumerate(args):
         if a == "--count" and i+1 < len(args): count = int(args[i+1])
-        if a == "--loop" and i+1 < len(args): loop_interval = int(args[i+1])
+        elif a == "--players" and i+1 < len(args): player_count = int(args[i+1])
+        elif a == "--loop" and i+1 < len(args): loop_interval = int(args[i+1])
 
 
     print("=" * 60, file=sys.stderr)
@@ -150,7 +153,7 @@ def main():
     print("=" * 60, file=sys.stderr)
 
     while True:
-        records = generate_pulls(count)
+        records = generate_pulls(count, player_count)
         five = sum(1 for r in records if r["star"] == 5)
         four = sum(1 for r in records if r["star"] == 4)
         print(f"[ODS] 生成 {len(records)} 抽 → 5★={five} 4★={four} 3★={len(records)-five-four}", file=sys.stderr)
