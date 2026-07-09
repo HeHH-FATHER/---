@@ -25,8 +25,9 @@ hdfs dfs -rm -r -skipTrash /tmp/spark-build-v2-checkpoint 2>/dev/null || true
 hdfs dfs -rm -r -skipTrash /tmp/spark-sat-v1-checkpoint 2>/dev/null || true
 
 echo "=== 重置 Kafka 消费偏移到最新（关键！避免重启后重放全量历史） ==="
-ssh Middleware "$KAFKA_BIN/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group spark-build-v2 --reset-offsets --to-latest --all-topics --execute 2>/dev/null" || true
-ssh Middleware "$KAFKA_BIN/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group spark-satisfaction-v2 --reset-offsets --to-latest --all-topics --execute 2>/dev/null" || true
+echo "  (跳过活跃 group 的 offset reset)"
+ssh Middleware "$KAFKA_BIN/kafka-consumer-groups.sh --bootstrap-server Middleware:9092 --group spark-satisfaction-v2 --reset-offsets --to-latest --all-topics --execute 2>/dev/null" || true
+ssh Middleware "$KAFKA_BIN/kafka-consumer-groups.sh --bootstrap-server Middleware:9092 --group spark-build-v2 --reset-offsets --to-latest --all-topics --execute 2>/dev/null" || true
 
 echo "=== 启动 Build Streaming (build-v2, batch=1s, 集群模式) ==="
 nohup $SPARK_HOME/bin/spark-submit \
@@ -61,3 +62,9 @@ echo "  tail -f /tmp/spark_build.log"
 echo "  tail -f /tmp/spark_sat.log"
 echo ""
 echo "Spark UI: http://master0:8080  (集群总览，应看到 2 个 Running Applications)"
+echo ""
+echo "=== 启动链路监控采集 ==="
+ssh Middleware "cd /root/abyss-pipeline && pkill -f monitor_collector 2>/dev/null; nohup python3 -u scripts/monitor_collector.py --loop > /tmp/monitor.log 2>&1 & disown" 2>/dev/null || true
+cd /root/abyss-pipeline && pkill -f monitor_master0 2>/dev/null; nohup python3 -u scripts/monitor_master0.py --loop > /tmp/monitor_m0.log 2>&1 & disown
+sleep 2
+echo "  监控: $(ps aux | grep 'monitor_master0\|monitor_collector' | grep -v grep | wc -l) 进程（期望 1，MW 侧通过 SSH 启动）"

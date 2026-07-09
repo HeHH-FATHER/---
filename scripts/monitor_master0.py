@@ -3,14 +3,14 @@
 master0 系统指标采集器 — 每5秒采集本地+slave指标 → Redis screen:monitor (Middleware)
 采集维度：HDFS | 所有节点系统资源 | 生成器进程
 """
-import time, os, subprocess, sys
+import time, os, subprocess, sys, json
 try: import redis
 except ImportError: print("需要 pip install redis"); sys.exit(1)
 
 REDIS_HOST = "Middleware"
 REDIS_PORT = 6379
 # 所有需要监控的节点
-NODES = {"master0": "localhost", "slave1": "slave1", "slave2": "slave2", "backup": "backup"}
+NODES = {"master0": "localhost", "slave1": "slave1", "slave2": "slave2", "backup": "backup", "vserver": "vserver"}
 
 def ssh(host, cmd, timeout=5):
     """SSH 执行命令，返回 stdout"""
@@ -22,18 +22,29 @@ def ssh(host, cmd, timeout=5):
     except: return ""
 
 def get_hdfs_usage():
+    """HDFS 使用率（通过 NameNode JMX API，避免 dfsadmin 启 JVM 吃 CPU）"""
     try:
         result = subprocess.run(
-            "/root/hadoop-2.7.6/bin/hdfs dfsadmin -report 2>/dev/null | grep 'DFS Used%' | head -1 | awk '{print $3}' | tr -d '%'",
-            shell=True, capture_output=True, text=True, timeout=5)
-        val = result.stdout.strip()
-        return int(float(val)) if val else -1
-    except: return -1
+            ["curl", "-s", "--connect-timeout", "3", "http://localhost:50070/jmx"],
+            capture_output=True, text=True, timeout=5)
+        if result.returncode == 0 and result.stdout:
+            data = json.loads(result.stdout)
+            for bean in data.get("beans", []):
+                if bean.get("name") == "Hadoop:service=NameNode,name=FSNamesystem":
+                    used = bean.get("CapacityUsed", 0)
+                    total = bean.get("CapacityTotal", 1)
+                    return int(used / total * 100) if total > 0 else -1
+    except: pass
+    return -1
 
 def get_node_metrics(host):
-    """收集单节点 CPU/内存/磁盘，返回 {"cpu": x, "mem": y, "disk": z}"""
+    """收集单节点 CPU/内存/磁盘，返回 {"cpu": x, "mem": y, "disk": z}
+    CPU: 真实使用率 %（loadavg / nproc * 100）"""
     cpu_str = ssh(host, "cat /proc/loadavg | awk '{print $1}'")
-    cpu = round(float(cpu_str), 1) if cpu_str else 0
+    cores_str = ssh(host, "nproc")
+    cpu_load = float(cpu_str) if cpu_str else 0
+    cores = int(cores_str) if cores_str else 1
+    cpu_pct = round(min(cpu_load / cores * 100, 100), 1)  # loadavg → 百分比
 
     mem_str = ssh(host, "free -b | awk 'NR==2{printf \"%.1f\", $3/$2*100}'")
     mem = float(mem_str) if mem_str else 0
@@ -41,7 +52,7 @@ def get_node_metrics(host):
     disk_str = ssh(host, "df -B1 / | awk 'NR==2{printf \"%.1f\", $3/$2*100}'")
     disk = float(disk_str) if disk_str else 0
 
-    return {"cpu": cpu, "mem": mem, "disk": disk}
+    return {"cpu": cpu_pct, "mem": mem, "disk": disk}
 
 def get_spark_metrics():
     """Spark Master REST API 指标"""
@@ -118,7 +129,7 @@ def main():
             print(f"[Monitor-M0] Redis 写入失败: {e}")
 
         cpu_mem = []
-        for name in ["master0","slave1","slave2","backup"]:
+        for name in ["master0","slave1","slave2","backup","vserver"]:
             k = "m0" if name == "master0" else name
             cpu_mem.append(f"{name}={data.get(f'{k}_cpu',0)}/{data.get(f'{k}_mem',0)}%")
         print(f"[Monitor-M0] HDFS={data.get('hdfs_usage','?')}% Gen={data['generator_count']} | " + " | ".join(cpu_mem))
