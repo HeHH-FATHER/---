@@ -1,0 +1,14 @@
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\App.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\satisfaction\SatisfactionProducerApp.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\model\CharacterBuildStats.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\publisher\KafkaRecordPublisher.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\model\WeaponChoice.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\model\CharacterBuildRecord.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\satisfaction\SatisfactionGenerator.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\streaming\SatisfactionStreamingConsumer.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\streaming\CharacterBuildStreamingConsumer.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\model\ArtifactSetChoice.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\satisfaction\SatisfactionRecord.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\generator\CharacterBuildGenerator.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\model\ArtifactSetStat.java
+C:\Users\82165\Desktop\md\Character-Build-Generator\Character-Build-Generator\src\main\java\org\example\model\WeaponStat.java

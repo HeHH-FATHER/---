@@ -1,0 +1,17 @@
+org\example\streaming\CharacterBuildStreamingConsumer$CharAgg.class
+org\example\streaming\CharacterBuildStreamingConsumer.class
+org\example\model\ArtifactSetStat.class
+org\example\model\WeaponChoice.class
+org\example\satisfaction\SatisfactionProducerApp.class
+org\example\satisfaction\SatisfactionRecord.class
+org\example\satisfaction\SatisfactionGenerator.class
+org\example\model\CharacterBuildStats.class
+org\example\satisfaction\SatisfactionGenerator$1.class
+org\example\model\ArtifactSetChoice.class
+org\example\streaming\SatisfactionStreamingConsumer.class
+org\example\App.class
+org\example\model\CharacterBuildRecord.class
+org\example\satisfaction\SatisfactionGenerator$CharState.class
+org\example\model\WeaponStat.class
+org\example\generator\CharacterBuildGenerator.class
+org\example\publisher\KafkaRecordPublisher.class
