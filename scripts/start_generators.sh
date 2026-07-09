@@ -16,3 +16,8 @@ disown
 sleep 2
 echo "Build: $(ps aux | grep 'build_stats' | grep -v grep | wc -l)"
 echo "Satisfaction: $(ps aux | grep 'Satisfaction' | grep -v grep | wc -l)"
+
+# 同时启动离线管道（抽卡，每5分钟5000抽→MySQL）
+echo ""
+echo "=== 启动离线管道 ==="
+bash scripts/start_offline_pipelines.sh
