@@ -301,6 +301,23 @@ else
 fi
 
 # ═══════════════════════════════════════════
+# 4.5 版本涨跌异动计算
+# ═══════════════════════════════════════════
+log_section "4.5 版本涨跌异动 (角色跨版本动量)"
+
+if ! $DRY_RUN; then
+    log_step "运行 compute_momentum.py..."
+    python3 $PROJECT_DIR/scripts/compute_momentum.py \
+        --host "$MYSQL_HOST" \
+        --user "$MYSQL_USER" \
+        --pass "$MYSQL_PASS" \
+        --db "$MYSQL_DB"
+    log_step "动量计算完成 → ads_char_momentum"
+else
+    echo "  [DRY-RUN] python3 compute_momentum.py"
+fi
+
+# ═══════════════════════════════════════════
 # 5. 摘要
 # ═══════════════════════════════════════════
 log_section "离线链路完成!"
