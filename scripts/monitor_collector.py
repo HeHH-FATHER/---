@@ -58,7 +58,7 @@ def get_redis_metrics(r):
         hits = info.get("keyspace_hits", 0)
         misses = info.get("keyspace_misses", 1)
         return {
-            "redis_memory": int(used / maxmem * 100),
+            "redis_mem_mb": round(used / 1024 / 1024, 1),  # 绝对内存 MB
             "redis_ops": info.get("instantaneous_ops_per_sec", 0),
             "redis_hit_rate": round(hits / (hits + misses) * 100, 1) if (hits + misses) > 0 else 100,
             "redis_keys": r.dbsize(),
@@ -73,6 +73,9 @@ def get_local_system():
     try:
         with open("/proc/loadavg") as f:
             load = float(f.read().split()[0])
+        with open("/proc/cpuinfo") as f:
+            cores = sum(1 for line in f if line.startswith("processor"))
+        cpu_pct = round(min(load / max(cores, 1) * 100, 100), 1)
         result = subprocess.run(["free", "-b"], capture_output=True, text=True, timeout=3)
         lines = result.stdout.strip().split("\n")
         if len(lines) >= 2:
@@ -85,7 +88,7 @@ def get_local_system():
         if len(parts) >= 5:
             disk_pct = round(int(parts[2]) / int(parts[1]) * 100, 1)
         else: disk_pct = 0
-        return {"mw_cpu": round(load, 1), "mw_mem": mem_pct, "mw_disk": disk_pct}
+        return {"mw_cpu": cpu_pct, "mw_mem": mem_pct, "mw_disk": disk_pct}
     except: return {}
 
 def get_consumer_count():

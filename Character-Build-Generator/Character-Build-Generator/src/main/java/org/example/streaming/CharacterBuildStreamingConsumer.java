@@ -81,8 +81,11 @@ public class CharacterBuildStreamingConsumer {
                     while (partition.hasNext()) {
                         CharacterBuildRecord r = partition.next();
                         Map<String, Object> rec = toRecentJson(r);
-                        jedis.lpush("build:recent", MAPPER.writeValueAsString(rec));
-                        jedis.ltrim("build:recent", 0, RECENT_SIZE - 1); // 逐条trim，保证实时滚动
+                        String json = MAPPER.writeValueAsString(rec);
+                        // 先去重：删除列表中同角色的旧记录，再 LPUSH
+                        jedis.lrem("build:recent", 0, "*" + r.getRole() + "*");
+                        jedis.lpush("build:recent", json);
+                        jedis.ltrim("build:recent", 0, RECENT_SIZE - 1);
                     }
                 } catch (Exception e) {
                     System.err.println("[Build] Redis error: " + e.getMessage());

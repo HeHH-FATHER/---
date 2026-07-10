@@ -59,31 +59,34 @@ public class CharacterBuildGenerator {
             // Distribute exactly maxRecords slots across characters weighted by
             // player_count. Characters that round to 0 under pure proportional
             // scaling still get slots if their fractional remainder is large enough.
-            int total = 0;
+            double totalDamped = 0;
             for (CharacterBuildStats s : statsList) {
-                total += s.getPlayer_count();
+                totalDamped += Math.sqrt(s.getPlayer_count());
             }
 
-            // Pass 1: floor allocation
+            // sqrt 权重分配（不强制保底，但压缩极端差距）
             int[] quotas = new int[statsList.size()];
-            double[] remainders = new double[statsList.size()];
             int allocated = 0;
+            int remaining = maxRecords;
 
+            double[] weights = new double[statsList.size()];
+            double totalW = 0;
             for (int i = 0; i < statsList.size(); i++) {
-                double share = (double) statsList.get(i).getPlayer_count() * maxRecords / total;
+                weights[i] = Math.sqrt(statsList.get(i).getPlayer_count());
+                totalW += weights[i];
+            }
+            double[] remainders = new double[statsList.size()];
+            for (int i = 0; i < statsList.size(); i++) {
+                double share = weights[i] * maxRecords / totalW;
                 quotas[i] = (int) share;
                 remainders[i] = share - quotas[i];
                 allocated += quotas[i];
             }
-
-            // Pass 2: distribute remaining slots by largest fractional remainder
-            int remaining = maxRecords - allocated;
-            // Sort indices by descending remainder (stable for reproducibility)
+            int extra = maxRecords - allocated;
             Integer[] indices = new Integer[statsList.size()];
             for (int i = 0; i < indices.length; i++) indices[i] = i;
             Arrays.sort(indices, (a, b) -> Double.compare(remainders[b], remainders[a]));
-
-            for (int j = 0; j < remaining && j < indices.length; j++) {
+            for (int j = 0; j < extra && j < indices.length; j++) {
                 quotas[indices[j]]++;
             }
 

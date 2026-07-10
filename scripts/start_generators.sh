@@ -7,7 +7,7 @@ export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 pkill -f org.example.App 2>/dev/null
 sleep 1
 
-$JAVA -Dfile.encoding=UTF-8 -cp Character-Build-Generator/build-generator.jar:$CP org.example.App build_stats.json --count 10 --kafka-bootstrap-servers Middleware:9092 --kafka-topic build-v2 --loop > /tmp/build_gen.log 2>&1 &
+$JAVA -Dfile.encoding=UTF-8 -cp Character-Build-Generator/build-generator.jar:$CP org.example.App build_stats.json --count 50 --kafka-bootstrap-servers Middleware:9092 --kafka-topic build-v2 --loop > /tmp/build_gen.log 2>&1 &
 disown
 
 $JAVA -Dfile.encoding=UTF-8 -cp Character-Build-Generator/build-generator.jar:$CP org.example.satisfaction.SatisfactionProducerApp 提瓦特数据/角色满意度排行.json --kafka-bootstrap-servers Middleware:9092 --kafka-topic satisfaction-v1 --loop --interval 3 > /tmp/satisfaction.log 2>&1 &
