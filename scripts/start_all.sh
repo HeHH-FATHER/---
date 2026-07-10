@@ -124,14 +124,10 @@ pkill -f monitor_master0 2>/dev/null || true
 sleep 1
 nohup python3 -u scripts/monitor_master0.py --loop > /tmp/monitor_m0.log 2>&1 &
 
-# MW 监控：重试 2 次确保启动
-MW=0
-for try in 1 2; do
-  ssh Middleware "pkill -f monitor_collector 2>/dev/null; cd /root/abyss-pipeline && nohup python3 -u scripts/monitor_collector.py --loop > /tmp/monitor.log 2>&1 & disown" 2>/dev/null || true
-  sleep 3
-  MW=$(ssh Middleware "ps aux | grep -c monitor_collector" 2>/dev/null || echo 0)
-  [ "$MW" -ge 1 ] && break
-done
+# MW 监控：守护进程（自动重启，死循环保活）
+ssh Middleware "pkill -f monitor_collector 2>/dev/null; pkill -f monitor_mw_daemon 2>/dev/null; cd /root/abyss-pipeline && nohup bash scripts/monitor_mw_daemon.sh > /tmp/monitor_daemon.log 2>&1 & disown" 2>/dev/null || true
+sleep 3
+MW=$(ssh Middleware "ps aux | grep -c monitor_collector" 2>/dev/null || echo 0)
 
 sleep 5
 MM=$(ps aux | grep -c monitor_master0 2>/dev/null || echo 0)

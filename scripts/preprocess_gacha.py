@@ -64,7 +64,7 @@ class GachaPullSimulator:
             self.pity_5[uid] = 0
             if guaranteed or self.rng.random() < 0.5:
                 self.guaranteed[uid] = False
-                up = random.choice(banner_up) if banner_up else ("?", "role")
+                up = weighted_choice(banner_up) if banner_up else ("?", "role")
                 return {"star": 5, "item": up[0], "type": up[1], "is_up": True, "uid": uid}
             else:
                 self.guaranteed[uid] = True
@@ -105,9 +105,9 @@ class GachaPullSimulator:
 # ═══════════════════════════════════════════════
 
 def load_banner_items(version="6.6下半"):
-    """加载指定版本卡池 UP 列表，默认 6.6下半"""
+    """加载指定版本卡池 UP 列表，含抽取权重。默认 6.6下半"""
     path = os.path.join(DATA_DIR, "卡池统计_clean.json")
-    items = []
+    items = []  # [(name, type, weight), ...]
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -117,11 +117,27 @@ def load_banner_items(version="6.6下半"):
                 all_entries.append((entry.get("version", ""), entry, ptype))
         for ver, entry, ptype in all_entries:
             if ver == version:
-                for name in entry.get("content", {}).keys():
-                    items.append((name, ptype))
+                for name, pct in entry.get("content", {}).items():
+                    items.append((name, ptype, pct))
     except: pass
-    if not items: items = [("玛薇卡", "role"), ("洛恩", "role"), ("焚曜千阳", "weapon"), ("灾悔", "weapon")]
+    # 默认权重：洛恩20.23% 玛薇卡79.77%，灾悔37.95% 焚曜千阳62.05%
+    if not items: items = [
+        ("玛薇卡", "role", 79.77), ("洛恩", "role", 20.23),
+        ("焚曜千阳", "weapon", 62.05), ("灾悔", "weapon", 37.95)
+    ]
     return items
+
+
+def weighted_choice(banner_items):
+    """按权重随机选一个 UP 物品"""
+    total = sum(w for _, _, w in banner_items)
+    r = __import__('random').uniform(0, total)
+    cumulative = 0
+    for name, ptype, weight in banner_items:
+        cumulative += weight
+        if r <= cumulative:
+            return (name, ptype)
+    return (banner_items[-1][0], banner_items[-1][1])
 
 
 # ═══════════════════════════════════════════════
