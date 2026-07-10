@@ -24,6 +24,10 @@ echo "=== 清理 Spark checkpoint ==="
 hdfs dfs -rm -r -skipTrash /tmp/spark-build-v2-checkpoint 2>/dev/null || true
 hdfs dfs -rm -r -skipTrash /tmp/spark-sat-v1-checkpoint 2>/dev/null || true
 
+echo "=== 重置 Kafka offset（双保险：Java 已用新 group，再加 shell reset） ==="
+ssh Middleware "$KAFKA_BIN/kafka-consumer-groups.sh --bootstrap-server Middleware:9092 --group spark-build-v2 --reset-offsets --to-latest --all-topics --execute 2>/dev/null" || true
+ssh Middleware "$KAFKA_BIN/kafka-consumer-groups.sh --bootstrap-server Middleware:9092 --group spark-satisfaction-v2 --reset-offsets --to-latest --all-topics --execute 2>/dev/null" || true
+
 echo "=== 启动 Build Streaming (build-v2, batch=1s) ==="
 nohup $SPARK_HOME/bin/spark-submit \
   --class org.example.streaming.CharacterBuildStreamingConsumer \
