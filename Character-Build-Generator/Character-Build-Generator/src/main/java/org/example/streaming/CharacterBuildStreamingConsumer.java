@@ -57,7 +57,7 @@ public class CharacterBuildStreamingConsumer {
         kafkaParams.put("bootstrap.servers", bootstrapServers);
         kafkaParams.put("key.deserializer", StringDeserializer.class.getName());
         kafkaParams.put("value.deserializer", StringDeserializer.class.getName());
-        kafkaParams.put("group.id", "spark-build-v2");
+                kafkaParams.put("group.id", "build-" + System.currentTimeMillis()/1000);
         kafkaParams.put("auto.offset.reset", "latest");
         kafkaParams.put("enable.auto.commit", "false");
 

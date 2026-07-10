@@ -120,14 +120,21 @@ check "$APPS" 2 "Spark Apps (期望≥2)"
 # ═══════════════════════════════════════════════
 echo ""
 echo "【6/7】链路监控采集..."
-ssh Middleware "pkill -f monitor_collector 2>/dev/null; cd /root/abyss-pipeline && nohup python3 -u scripts/monitor_collector.py --loop > /tmp/monitor.log 2>&1 & disown" 2>/dev/null || true
 pkill -f monitor_master0 2>/dev/null || true
 sleep 1
 nohup python3 -u scripts/monitor_master0.py --loop > /tmp/monitor_m0.log 2>&1 &
 
-sleep 8
+# MW 监控：重试 2 次确保启动
+MW=0
+for try in 1 2; do
+  ssh Middleware "pkill -f monitor_collector 2>/dev/null; cd /root/abyss-pipeline && nohup python3 -u scripts/monitor_collector.py --loop > /tmp/monitor.log 2>&1 & disown" 2>/dev/null || true
+  sleep 3
+  MW=$(ssh Middleware "ps aux | grep -c monitor_collector" 2>/dev/null || echo 0)
+  [ "$MW" -ge 1 ] && break
+done
+
+sleep 5
 MM=$(ps aux | grep -c monitor_master0 2>/dev/null || echo 0)
-MW=$(ssh Middleware "ps aux | grep -c monitor_collector" 2>/dev/null || echo 0)
 check "$MM" 1 "master0 监控"
 check "$MW" 1 "Middleware 监控"
 

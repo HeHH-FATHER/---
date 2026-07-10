@@ -20,6 +20,7 @@ public class SatisfactionStreamingConsumer {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Map<String, Double> PREV = new HashMap<>();
+    private static final Map<String, double[]> ROLE_CACHE = new HashMap<>(); // {star, ability, look}
 
     public static void main(String[] args) throws InterruptedException {
         String bootstrapServers = args.length >= 1 ? args[0] : "Middleware:9092";
@@ -38,7 +39,8 @@ public class SatisfactionStreamingConsumer {
         kafkaParams.put("bootstrap.servers", bootstrapServers);
         kafkaParams.put("key.deserializer", StringDeserializer.class.getName());
         kafkaParams.put("value.deserializer", StringDeserializer.class.getName());
-        kafkaParams.put("group.id", "spark-satisfaction-v2");
+                // 新 group = 自动从 latest 开始，不读历史
+        kafkaParams.put("group.id", "sat-" + System.currentTimeMillis()/1000);
         kafkaParams.put("auto.offset.reset", "latest");
         kafkaParams.put("enable.auto.commit", "false");
 
@@ -62,6 +64,8 @@ public class SatisfactionStreamingConsumer {
                     jedis.zadd("rt:satisfaction:ranking", r.getSatify(), role);
                     jedis.rpush("rt:satisfaction:trend:" + role, String.valueOf(r.getSatify()));
                     jedis.ltrim("rt:satisfaction:trend:" + role, -60, -1);
+                    // 缓存角色 star/ability/look（来自生成器）
+                    ROLE_CACHE.put(role, new double[]{r.getStar(), r.getAbility(), r.getLook()});
                 }
 
                 Set<redis.clients.jedis.Tuple> top = jedis.zrevrangeWithScores("rt:satisfaction:ranking", 0, 5);
@@ -73,9 +77,10 @@ public class SatisfactionStreamingConsumer {
                     double delta = 0;
                     if (PREV.containsKey(role)) delta = Math.round((satify - PREV.get(role)) * 10.0) / 10.0;
                     PREV.put(role, satify);
+                    double[] cached = ROLE_CACHE.getOrDefault(role, new double[]{5, satify, satify});
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("role", role); item.put("satify", satify); item.put("delta", delta);
-                    item.put("star", 5); item.put("ability", satify); item.put("look", satify);
+                    item.put("star", (int) cached[0]); item.put("ability", cached[1]); item.put("look", cached[2]);
                     List<String> tv = jedis.lrange("rt:satisfaction:trend:" + role, -22, -1);
                     List<Double> trend = new ArrayList<>();
                     for (String v : tv) try { trend.add(Double.parseDouble(v)); } catch (NumberFormatException ignored) {}
