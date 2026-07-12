@@ -76,7 +76,7 @@ avatar_map = {row[0]: row[1] for row in cur.fetchall()}
 
 # 清空当前版本旧数据
 cur.execute("DELETE FROM ads_char_summary WHERE version_name=%s", (VERSION,))
-# 配队保留静态数据，不删除（由 import_all_versions.py 管理）
+# 配队不删，用 ON DUPLICATE KEY 更新——保留静态数据，叠加生成器数据
 
 # 写入角色（包含拥有但未上场的）
 all_chars = set(list(char_own.keys()) + list(char_use.keys()))
@@ -97,7 +97,8 @@ for team_name, count in sorted(team_counts.items(), key=lambda x: -x[1]):
     roles_json = json.dumps(team_name.split(" + "), ensure_ascii=False)
     avatars_json = json.dumps(team_avatars.get(team_name, []), ensure_ascii=False)
     cur.execute("""INSERT INTO ads_team_usage (version_name, team_name, roles_json, avatars_json, use_rate, has_rate)
-        VALUES (%s,%s,%s,%s,%s,%s)""",
+        VALUES (%s,%s,%s,%s,%s,%s)
+        ON DUPLICATE KEY UPDATE use_rate=VALUES(use_rate), has_rate=VALUES(has_rate), avatars_json=VALUES(avatars_json)""",
         (VERSION, team_name, roles_json, avatars_json, use_rate, has_rate))
 
 conn.commit()
