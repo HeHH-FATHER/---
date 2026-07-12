@@ -115,6 +115,50 @@ def snapshot_gacha(r: redis.Redis, conn: pymysql.Connection, verbose=False):
 # 练度快照：build:* → rt_build_snapshot
 # ═══════════════════════════════════════════
 
+def snapshot_hot_chars(r: redis.Redis, conn: pymysql.Connection, verbose=False):
+    """build:hot_chars JSON → rt_build_snapshot（含命座分布）"""
+    json_str = r.get("build:hot_chars")
+    if not json_str:
+        return 0
+
+    try:
+        hot_list = json.loads(json_str)
+    except (json.JSONDecodeError, ValueError):
+        return 0
+
+    cursor = conn.cursor()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    count = 0
+
+    for item in hot_list[:4]:  # TOP4
+        role = item.get("role", "?")
+        avg_const = item.get("avg_constellation", 0)
+        avg_dmg = item.get("avg_damage", 0)
+        const_dist = json.dumps(item.get("constellation_dist", {}))
+        weapons = json.dumps([w.get("name") for w in (item.get("weapons") or [])[:3]])
+        artifacts = json.dumps([a.get("name") for a in (item.get("artifacts") or [])[:3]])
+
+        sql = """INSERT INTO rt_build_snapshot
+                 (char_name, window_time, avg_constellation, avg_damage, top_weapon, top_artifact, const_dist, weapons_json, artifacts_json)
+                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 ON DUPLICATE KEY UPDATE
+                   avg_constellation=VALUES(avg_constellation), avg_damage=VALUES(avg_damage),
+                   const_dist=VALUES(const_dist), top_weapon=VALUES(top_weapon), top_artifact=VALUES(top_artifact)"""
+        try:
+            cursor.execute(sql, (role, now, float(avg_const), int(avg_dmg),
+                                 weapons, artifacts, const_dist, weapons, artifacts))
+            count += 1
+        except Exception as e:
+            if verbose:
+                print(f"  [hot_chars] {role} 写入失败: {e}")
+
+    conn.commit()
+    cursor.close()
+    if verbose:
+        print(f"  [hot_chars] TOP{len(hot_list)} 写入 {count} 条")
+    return count
+
+
 def snapshot_build(r: redis.Redis, conn: pymysql.Connection, verbose=False):
     """
     Redis → rt_build_snapshot
@@ -181,6 +225,11 @@ def run_snapshot(verbose=False):
         total += snapshot_build(r, conn, verbose)
     except Exception as e:
         print(f"  [ERROR] build snapshot: {e}")
+
+    try:
+        total += snapshot_hot_chars(r, conn, verbose)
+    except Exception as e:
+        print(f"  [ERROR] hot_chars snapshot: {e}")
 
     conn.close()
     r.close()

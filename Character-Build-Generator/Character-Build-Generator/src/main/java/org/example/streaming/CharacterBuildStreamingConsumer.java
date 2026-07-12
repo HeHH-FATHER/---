@@ -12,6 +12,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.*;
+import java.util.List;
 
 /**
  * Spark Streaming: 消费 build-v2 → Redis build:recent + build:hot_chars
@@ -35,7 +36,7 @@ import java.util.*;
 public class CharacterBuildStreamingConsumer {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final int RECENT_SIZE = 20;
+    private static final int RECENT_SIZE = 200;
     private static final int TOP_N = 4;
 
     public static void main(String[] args) throws InterruptedException {
@@ -82,10 +83,18 @@ public class CharacterBuildStreamingConsumer {
                         CharacterBuildRecord r = partition.next();
                         Map<String, Object> rec = toRecentJson(r);
                         String json = MAPPER.writeValueAsString(rec);
-                        // 先去重：删除列表中同角色的旧记录，再 LPUSH
-                        jedis.lrem("build:recent", 0, "*" + r.getRole() + "*");
+                        // 去重：找到同角色所有旧记录后全部删除
+                        List<String> items = jedis.lrange("build:recent", 0, -1);
+                        List<String> toRemove = new ArrayList<>();
+                        for (String item : items) {
+                            try { Map<String,Object> old = MAPPER.readValue(item, Map.class);
+                                if (r.getRole().equals(old.get("role"))) toRemove.add(item);
+                            } catch (Exception ex) {}
+                        }
+                        for (String old : toRemove) jedis.lrem("build:recent", 1, old);
                         jedis.lpush("build:recent", json);
                         jedis.ltrim("build:recent", 0, RECENT_SIZE - 1);
+                        jedis.incr("build:total_count");
                     }
                 } catch (Exception e) {
                     System.err.println("[Build] Redis error: " + e.getMessage());
@@ -109,6 +118,7 @@ public class CharacterBuildStreamingConsumer {
                 agg.count++;
                 agg.star = r.getStar();
                 agg.constellationSum += r.getConstellation();
+                agg.constDist.merge(r.getConstellation(), 1, Integer::sum);
                 agg.damageSum += r.getAvg_damage();
                 agg.ename = r.getEname() != null ? r.getEname() : "";
                 // 武器
@@ -170,6 +180,13 @@ public class CharacterBuildStreamingConsumer {
                         });
                 item.put("artifacts", artiList);
 
+                // 命座分布 C0~C6
+                Map<String, Double> constDist = new LinkedHashMap<>();
+                for (int c = 0; c <= 6; c++) {
+                    constDist.put("c" + c, round1(agg.constDist.getOrDefault(c, 0) / (double) agg.count * 100));
+                }
+                item.put("constellation_dist", constDist);
+
                 result.add(item);
             }
 
@@ -218,5 +235,6 @@ public class CharacterBuildStreamingConsumer {
         String ename = "";
         Map<String, Integer> weapons = new HashMap<>();
         Map<String, Integer> artifacts = new HashMap<>();
+        Map<Integer, Integer> constDist = new HashMap<>();  // C0~C6 分布
     }
 }

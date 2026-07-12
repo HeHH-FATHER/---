@@ -16,7 +16,7 @@ VER_MAP = {
     "v56": "6.4深渊使用率统计(第一期)",
     "v57": "6.5深渊使用率统计(第一期)",
     "v58": "6.5深渊使用率统计(第二期)",
-    "v59": "v6.6(第一期)",
+    "v59": "6.6深渊使用率统计(第一期)",
 }
 # 版本顺序（用于涨跌对比）
 VER_ORDER = ["v55", "v56", "v57", "v58", "v59"]
@@ -113,8 +113,8 @@ def main(base_dir):
             curr_r = curr_chars[name]
             trend = round(curr_r - prev_r, 1)
             if trend == 0: continue
-            c.execute("INSERT INTO ads_char_momentum (char_name, prev_rate, curr_rate, trend, avatar) VALUES (%s,%s,%s,%s,%s)",
-                      (name, prev_r, curr_r, trend, avatar_map.get(name, "")))
+            c.execute("INSERT INTO ads_char_momentum (version_name, char_name, prev_rate, curr_rate, trend, avatar) VALUES (%s,%s,%s,%s,%s,%s)",
+                      (curr, name, prev_r, curr_r, trend, avatar_map.get(name, "")))
         print(f"[Momentum] {prev}→{curr}: {len(all_names)} chars compared", file=sys.stderr)
 
     conn.commit(); c.close(); conn.close()

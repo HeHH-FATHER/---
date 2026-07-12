@@ -6,7 +6,11 @@ master0 指标由 master0 上的 monitor_master0.py 配套写入同一 Redis Has
 """
 import time, os, subprocess, sys
 try: import redis
-except ImportError: print("需要 pip install redis"); sys.exit(1)
+except ImportError:
+    print("安装 redis...")
+    os.system("pip3 install redis 2>/dev/null")
+    try: import redis
+    except ImportError: print("FATAL: redis 安装失败"); sys.exit(1)
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "100.103.177.85")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))

@@ -5,7 +5,11 @@ master0 系统指标采集器 — 每5秒采集本地+slave指标 → Redis scre
 """
 import time, os, subprocess, sys, json
 try: import redis
-except ImportError: print("需要 pip install redis"); sys.exit(1)
+except ImportError:
+    print("安装 redis...")
+    os.system("pip3 install redis 2>/dev/null")
+    try: import redis
+    except ImportError: print("FATAL: redis 安装失败"); sys.exit(1)
 
 REDIS_HOST = "Middleware"
 REDIS_PORT = 6379
